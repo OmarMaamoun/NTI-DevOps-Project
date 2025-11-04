@@ -1,0 +1,10 @@
+variable "vpc_cider"{}
+variable "environment"{}
+variable "az1"{}
+variable "az2"{}
+variable "private_subnet"{}
+variable "public_subnet"{}
+variable "cidr_blocks"{}
+variable "private_az2_subnet"{}
+variable "public_az2_subnet"{}
+variable "cluster_name"{}

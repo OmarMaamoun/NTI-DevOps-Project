@@ -1,0 +1,35 @@
+{
+    "nodegroup": {
+        "nodegroupName": "eks-node-group",
+        "nodegroupArn": "arn:aws:eks:eu-north-1:117676877497:nodegroup/dev-eks-cluster/eks-node-group/dccd2626-411a-3d1a-6287-0d822556bf69",
+        "clusterName": "dev-eks-cluster",
+        "releaseVersion": "ami-05b7cc86a03fcd3e2",
+        "createdAt": "2025-11-04T02:37:56.136000+02:00",
+        "modifiedAt": "2025-11-04T03:10:44.970000+02:00",
+        "status": "DELETING",
+        "capacityType": "ON_DEMAND",
+        "scalingConfig": {
+            "minSize": 1,
+            "maxSize": 3,
+            "desiredSize": 2
+        },
+        "subnets": [
+            "subnet-0f9e250f9d47aae3a",
+            "subnet-087786ce82eef0d68"
+        ],
+        "amiType": "CUSTOM",
+        "nodeRole": "arn:aws:iam::117676877497:role/eks-node-role",
+        "health": {
+            "issues": []
+        },
+        "updateConfig": {
+            "maxUnavailable": 1
+        },
+        "launchTemplate": {
+            "name": "eks-node-20251103235327173300000001",
+            "version": "3",
+            "id": "lt-033cea8bb863c2654"
+        },
+        "tags": {}
+    }
+}

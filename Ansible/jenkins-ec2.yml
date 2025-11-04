@@ -1,0 +1,125 @@
+---
+- name: Install Jenkins
+  hosts: jenkins
+  become: yes
+  gather_facts: no
+  
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+# --------------------------------------------------
+# INSTALL DOCKER
+# --------------------------------------------------
+    - name: Install required packages for Docker
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - gnupg
+        state: present
+
+    - name: Add Docker GPG key
+      shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+    - name: Add Docker repository
+      shell: |
+        echo \
+        "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
+        https://download.docker.com/linux/ubuntu \
+        $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    - name: Update apt cache after adding Docker repo
+      apt:
+        update_cache: yes
+
+    - name: Install Docker Engine and Docker Compose plugin
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: present
+
+    - name: Enable and start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add Jenkins user to Docker group
+      user:
+        name: jenkins
+        groups: docker
+        append: yes
+
+# --------------------------------------------------
+# INSTALLING JENKINS 
+# --------------------------------------------------
+    - name: Create Jenkins user
+      user:
+        name: jenkins
+        state: present
+        shell: /bin/bash
+
+    - name: Add Jenkins user to sudo group
+      user:
+        name: jenkins
+        groups: sudo
+        append: yes
+
+    - name: Add jenkins user to sudoers file
+      lineinfile:
+        dest: /etc/sudoers
+        line: "jenkins ALL=(ALL:ALL) NOPASSWD: ALL"
+        validate: 'visudo -cf %s'
+
+    - name: Replace %sudo line in sudoers file
+      lineinfile:
+        dest: /etc/sudoers
+        regexp: '^%sudo\s+'
+        line: '%sudo ALL=(ALL:ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+    - name: Install OpenJDK 17
+      apt:
+        name: openjdk-17-jdk
+        state: present
+
+    - name: Add Jenkins repository key
+      shell: "wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -"
+
+    - name: Add Jenkins repository
+      shell: "sudo sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'"
+
+    - name: Add Jenkins repository key (alternative method)
+      shell: "sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 5BA31D57EF5975CA"
+
+    - name: Update apt cache after adding Jenkins repository
+      apt:
+        update_cache: yes
+
+    - name: Install specific Jenkins LTS version
+      apt:
+        name: "jenkins=2.516.2"
+        state: present
+        allow_downgrade: yes
+
+    - name: Start and enable Jenkins service
+      service:
+        name: jenkins
+        state: started
+        enabled: yes
+        
+    - name: Read initialAdminPassword file content
+      slurp:
+        src: /var/lib/jenkins/secrets/initialAdminPassword
+      register: admin_password_content
+
+    - name: Display initialAdminPassword file content
+      debug:
+        msg: "{{ admin_password_content.content | b64decode }}"
