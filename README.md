@@ -159,6 +159,5 @@ kubectl apply -f k8s/
  👤 Author
 
 **Omar Maamoun**
-NTI DevOps Final Project
 
 ---
