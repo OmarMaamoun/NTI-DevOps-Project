@@ -21,7 +21,6 @@
 * [Kubernetes](#-kubernetes)
 * [Jenkins CI/CD Pipeline](#-jenkins-cicd-pipeline)
 * [Monitoring & Alerting](#-monitoring--alerting)
-* [Screenshots / Architecture Diagram](#-screenshots--architecture-diagram)
 * [Author](#-author)
 
 ---
